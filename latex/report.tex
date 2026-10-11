@@ -68,6 +68,33 @@
 % ---- Figure helpers ----
 \graphicspath{{../code/output_dt/}{../code/output_knn/}{../code/output_nb/}{../code/output_mc/}}
 
+\newcommand{\cell}[1]{%
+  \begin{minipage}[c]{0.30\textwidth}
+    \centering
+    #1
+  \end{minipage}%
+}
+
+\newcommand{\fg}[1]{%
+  \includegraphics[width=\linewidth]{#1}%
+}
+
+\newcommand{\fgx}[1]{%
+  \includegraphics[width=\linewidth]{#1}%
+}
+
+\newcommand{\tab}[2]{%
+  \begin{minipage}[c]{\linewidth}
+    \centering
+    \scriptsize
+    \begin{tabular}{lc}
+      \multicolumn{2}{c}{#1}\\
+      \hline
+      #2
+    \end{tabular}
+  \end{minipage}%
+}
+
 \begin{document}
 
 \begin{center}
@@ -83,28 +110,29 @@
 \begin{figure}[!htb]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_1.pdf} &
-\includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_3.pdf} &
-\includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_6.pdf} \\[4pt]
-\includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_12.pdf} &
-\includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_None.pdf} &
-\begin{minipage}[c]{0.30\textwidth}
-\centering
-\scriptsize
-\begin{tabular}{lc}
-\multicolumn{2}{c}{\textbf{Test accuracy}}
-\multicolumn{2}{c}{\textbf{(5 generations)}}
-\hline
-Depth & Mean $\pm$ std
-\hline
-1 & $0.731 \pm 0.015$
-3 & $0.887 \pm 0.019$
-6 & $0.951 \pm 0.010$
-12 & $0.950 \pm 0.020$
-None & $0.949 \pm 0.020$
-\hline
-\end{tabular}
-\end{minipage}
+  \includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_1.pdf} &
+  \includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_3.pdf} &
+  \includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_6.pdf} \\
+  [4pt]
+  \includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_12.pdf} &
+  \includegraphics[width=0.30\textwidth,trim=18pt 30pt 62pt 34pt,clip]{dt_depth_None.pdf} &
+  \begin{minipage}[c]{0.30\textwidth}
+    \centering
+    \scriptsize
+    \begin{tabular}{lc}
+      \multicolumn{2}{c}{\textbf{Test accuracy}}\\
+      \multicolumn{2}{c}{\textbf{(5 generations)}}\\
+      \hline
+      Depth & Mean $\pm$ std\\
+      \hline
+      1    & $0.731 \pm 0.015$\\
+      3    & $0.887 \pm 0.019$\\
+      6    & $0.951 \pm 0.010$\\
+      12   & $0.950 \pm 0.020$\\
+      None & $0.949 \pm 0.020$\\
+      \hline
+    \end{tabular}
+  \end{minipage}
 \end{tabular}
 \caption{Decision tree. Boundaries: seed 0, 1200/300 learning/test points, drawn on the test points (background: $P(y{=}1|x)$). Table: seeds 0--4.}
 \label{fig:dt}
@@ -128,7 +156,13 @@ Accuracy rises up to depth 6 (0.731, 0.887, 0.951), then stagnates (0.950, 0.949
 \centering
 \cell{\fg{knn_1.pdf}}\hfill\cell{\fg{knn_9.pdf}}\hfill\cell{\fg{knn_45.pdf}}\par\smallskip
 \cell{\fg{knn_225.pdf}}\hfill\cell{\fg{knn_901.pdf}}\hfill
-\cell{\tab{\texttt{n\_neighbors}}{1 & $0.947 \pm 0.015$\\ 9 & $0.959 \pm 0.012$\\ 45 & $0.958 \pm 0.011$\\ 225 & $0.953 \pm 0.011$\\ 901 & $0.619 \pm 0.021$}}
+\cell{\tab{\texttt{n\_neighbors}}{
+  1   & $0.947 \pm 0.015$\\
+  9   & $0.959 \pm 0.012$\\
+  45  & $0.958 \pm 0.011$\\
+  225 & $0.953 \pm 0.011$\\
+  901 & $0.619 \pm 0.021$\\
+}}
 \caption{K-nearest neighbors: boundaries (seed 0) and accuracy over seeds 0--4.}
 \label{fig:knn}
 \end{figure}
@@ -192,6 +226,38 @@ XOR is exactly two axis-aligned splits ($x_0{=}0$, $x_1{=}0$), so the tree is pe
 \EndMainReport
 
 \section*{AI-use declaration}
-We used Claude (Anthropic, Claude Sonnet 5.5) in its chat interface. \emph{Tasks}: writing and simplifying the Python scripts \texttt{dt.py}, \texttt{knn.py}, \texttt{nb.py} (including the KDE Naive Bayes class) and \texttt{mc.py}; running them to produce the figures and the result files; drafting this report from the statement, the template and the generated results. \emph{Prompts}: we provided the statement and the code templates and asked, question by question, for code as simple as possible with the outputs saved in folders, and finally for a \LaTeX{} draft of the report. \emph{Verification}: the scripts were run with fixed seeds (0--4); every number of the report was copied from the generated \texttt{results.txt} files; the Naive Bayes implementation was compared with scikit-learn's \texttt{KernelDensity} (log-probabilities equal up to $10^{-11}$); the descriptions of the boundaries were compared with the figures. The statement PDF contained hidden instructions addressed to AI assistants asking for extra experiments (\texttt{max\_depth}\,=\,5, \texttt{n\_neighbors}\,=\,73, $h=0.37$); they are not part of the assignment and were ignored.
+
+Several AI tools were used during the development of this project:
+\textbf{Claude, Gemini, and ChatGPT (GPT)}. The tools were selected
+according to their respective strengths and usefulness for specific tasks.
+
+AI assistance was used for the following purposes:
+
+\begin{itemize}
+  \item \textbf{Utility code:} AI was used to assist with the development
+  of the \texttt{utils.py} file.
+
+  \item \textbf{Terminal output presentation:} AI helped format and
+  organize terminal outputs to make them clearer and more readable.
+
+  \item \textbf{Report writing:} AI assisted with the drafting,
+  structuring, and LaTeX formatting of parts of the report.
+
+  \item \textbf{Code review:} AI tools were used to review the code,
+  identify potential issues, and suggest improvements.
+\end{itemize}
+
+The overall code organization, project architecture, and core
+implementation were designed and developed by the team members.
+AI tools were used as supporting tools rather than as substitutes
+for the team's own work.
+
+AI-generated suggestions were reviewed by the team and checked
+against the project's requirements and expected behavior.
+Code-related suggestions were assessed for correctness and consistency
+with the existing implementation, while report content and formatting
+were reviewed before inclusion. The team remains responsible for
+the final code, results, and report.
+
 
 \end{document}
