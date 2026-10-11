@@ -1,0 +1,109 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=20mm,includeheadfoot,headheight=20pt,headsep=6mm,footskip=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+
+\newcommand{\StudentNames}{Student 1 (ID), Student 2 (ID), [Student 3 (ID)]}
+
+\newif\ifmainreport
+\mainreporttrue
+\newcounter{MainReportPages}
+\newcommand{\EndMainReport}{%
+  \clearpage
+  \setcounter{MainReportPages}{\numexpr\value{page}-1\relax}%
+  \mainreportfalse
+  \ifnum\value{MainReportPages}>4\relax
+    \PackageWarningNoLine{elen0062-report}{MAIN REPORT EXCEEDS FOUR PAGES:
+      \arabic{MainReportPages} counted pages. The AI-use
+      declaration is excluded. Shorten the main report}%
+  \fi
+  {\small This page does not count toward the 4-page limit.\par}\medskip
+}
+\AtEndDocument{%
+  \ifmainreport
+    \PackageWarningNoLine{elen0062-report}{The required EndMainReport marker
+      is missing. The main-report page count cannot be confirmed}%
+  \fi
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{%
+  \ifmainreport
+    \ifnum\value{page}>4\relax
+      \Large\color{red!65!black}\textbf{MAIN REPORT EXCEEDS FOUR PAGES}%
+    \else
+      \small ELEN0062 -- Project 1%
+    \fi
+  \else
+    \small ELEN0062 -- Project 1%
+  \fi
+}
+\fancyhead[R]{%
+  \ifmainreport
+    \ifnum\value{page}>4\relax
+    \else
+      \small 2026--2027%
+    \fi
+  \else
+    \small 2026--2027%
+  \fi
+}
+\fancyfoot[R]{\ifmainreport\small\thepage\fi}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\large\bfseries Project 1 -- Classification algorithms}\par
+  {\small\StudentNames}
+\end{center}
+
+\section{Decision tree}
+\subsection{}
+
+\subsection{}
+
+\section{K-nearest neighbors}
+\subsection{}
+
+\subsection{}
+
+\section{KDE Naive Bayes}
+\subsection{}
+
+\subsection{}
+
+\subsection{}
+
+\subsection{}
+
+\section{Method comparison}
+\subsection{}
+
+\subsection{}
+
+\subsection{}
+
+\subsection{}
+
+\subsection{}
+
+% All report content must stay above this marker.
+\EndMainReport
+
+\section*{AI-use declaration}
+
+\end{document}
