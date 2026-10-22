@@ -38,7 +38,6 @@ class KDENaiveBayes:
         return self
 
     def _log_density(self, Xc, x):
-        """log p(x_i | y) for one feature: Xc and x are 1D arrays."""
         h = self.bandwidth
         u = (x[:, None] - Xc[None, :]) / h
         a = -0.5 * u ** 2
