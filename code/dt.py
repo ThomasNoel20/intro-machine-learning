@@ -37,7 +37,6 @@ class Tee:
 
 
 def get_data(seed):
-    """1500 points: first 1200 for learning, last 300 for test."""
     X, y = make_dataset(NB_SAMPLES, random_state=seed)
     return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 

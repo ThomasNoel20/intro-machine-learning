@@ -84,7 +84,6 @@ def save_output(filename):
     return open(output_path, "w", encoding="utf-8")
 
 def get_data(seed, xor=False):
-    """Return X_learn, y_learn, X_test, y_test for one generation."""
     if xor:
         X, y = make_xor_dataset(NB_SAMPLES, random_state=seed)
     else:
