@@ -38,26 +38,31 @@ class Tee:
 
 def get_data(seed):
     X, y = make_dataset(NB_SAMPLES, random_state=seed)
+
     return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 
 
 def main():
     X_l, y_l, X_t, y_t = get_data(SEEDS[0])
     print("Q1 - seed 0 (train / test accuracy)")
+
     for k in NEIGHBORS:
         model = KNeighborsClassifier(n_neighbors=k).fit(X_l, y_l)
-        plot_boundary("knn_k_{}".format(k), model, X_t, y_t,
-                      title="n_neighbors={}".format(k))
-        print("n_neighbors={}: train={:.3f} test={:.3f}".format(
-            k, model.score(X_l, y_l), model.score(X_t, y_t)))
+
+        plot_boundary("knn_k_{}".format(k), model, X_t, y_t,title="n_neighbors={}".format(k))
+
+        print("n_neighbors={}: train={:.3f} test={:.3f}".format( k, model.score(X_l, y_l), model.score(X_t, y_t)))
 
     print("\nQ2 - test accuracy over seeds 0-4 (mean +/- std)")
+
     for k in NEIGHBORS:
         acces = []
+
         for seed in SEEDS:
             X_l, y_l, X_t, y_t = get_data(seed)
             model = KNeighborsClassifier(n_neighbors=k).fit(X_l, y_l)
             acces.append(model.score(X_t, y_t))
+            
         print("n_neighbors={}: {:.3f} +/- {:.3f}".format(k, np.mean(acces), np.std(acces)))
 
 

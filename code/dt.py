@@ -38,18 +38,19 @@ class Tee:
 
 def get_data(seed):
     X, y = make_dataset(NB_SAMPLES, random_state=seed)
+
     return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 
 
 def main():
     X_l, y_l, X_t, y_t = get_data(SEEDS[0])
     print("Q1 - seed 0 (train / test accuracy)")
+
     for depth in DEPTHS:
         model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X_l, y_l)
-        plot_boundary("dt_depth_{}".format(depth), model, X_t, y_t,
-                      title="max_depth={}".format(depth))
-        print("max_depth={}: train={:.3f} test={:.3f}".format(
-            depth, model.score(X_l, y_l), model.score(X_t, y_t)))
+        plot_boundary("dt_depth_{}".format(depth), model, X_t, y_t,title="max_depth={}".format(depth))
+
+        print("max_depth={}: train={:.3f} test={:.3f}".format(depth, model.score(X_l, y_l), model.score(X_t, y_t)))
 
     print("\nQ2 - test accuracy over seeds 0-4 (mean +/- std)")
     for depth in DEPTHS:
@@ -58,6 +59,7 @@ def main():
             X_l, y_l, X_t, y_t = get_data(seed)
             model = DecisionTreeClassifier(max_depth=depth, random_state=0).fit(X_l, y_l)
             acces.append(model.score(X_t, y_t))
+            
         print("max_depth={}: {:.3f} +/- {:.3f}".format(depth, np.mean(acces), np.std(acces)))
 
 
