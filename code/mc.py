@@ -15,8 +15,8 @@ from data import make_dataset, make_xor_dataset
 from plot import plot_boundary
 
 
-N_SAMPLES = 1500
-N_LEARN = 1200
+NB_SAMPLES = 1500
+NB_LEARN = 1200
 SEEDS = [0, 1, 2, 3, 4]
 
 DEPTHS = [1, 3, 6, 12, None]
@@ -64,10 +64,10 @@ class KDENaiveBayes:
 def get_data(seed, xor=False):
     """Return X_learn, y_learn, X_test, y_test for one generation."""
     if xor:
-        X, y = make_xor_dataset(N_SAMPLES, random_state=seed)
+        X, y = make_xor_dataset(NB_SAMPLES, random_state=seed)
     else:
-        X, y = make_dataset(N_SAMPLES, random_state=seed)
-    return X[:N_LEARN], y[:N_LEARN], X[N_LEARN:], y[N_LEARN:]
+        X, y = make_dataset(NB_SAMPLES, random_state=seed)
+    return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 
 
 def make_model(method, value):
