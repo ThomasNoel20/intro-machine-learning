@@ -77,9 +77,8 @@ class Tee:
 
 
 def save_output(filename):
-    output_path = Path(filename).with_name(
-        Path(filename).stem + "-answer.txt"
-    )
+    output_path = Path(filename).with_name(Path(filename).stem + "-answer.txt")
+
     return open(output_path, "w", encoding="utf-8")
 
 def get_data(seed, xor=False):
@@ -87,14 +86,17 @@ def get_data(seed, xor=False):
         X, y = make_xor_dataset(NB_SAMPLES, random_state=seed)
     else:
         X, y = make_dataset(NB_SAMPLES, random_state=seed)
+
     return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 
 
 def make_model(method, value):
     if method == "tree":
         return DecisionTreeClassifier(max_depth=value, random_state=0)
+    
     if method == "knn":
         return KNeighborsClassifier(n_neighbors=value)
+    
     return KDENaiveBayes(bandwidth=value)
 
 
@@ -104,30 +106,40 @@ def candidates(method):
 
 def tune(method, X, y, seed):
     rng = np.random.RandomState(seed)
+
     idx = rng.permutation(len(X))
     n_train = int(0.8 * len(X))
+
     tr, va = idx[:n_train], idx[n_train:]
 
     best_value, best_acc = None, -1.0
+
     for value in candidates(method):
         model = make_model(method, value).fit(X[tr], y[tr])
         acc = np.mean(model.predict(X[va]) == y[va])
+
         if acc > best_acc:
             best_value, best_acc = value, acc
+
     return best_value
 
 
 def run(method, xor, plot_name):
     acces, chosen = [], []
+
     for seed in SEEDS:
+
         X_l, y_l, X_t, y_t = get_data(seed, xor)
+        
         value = tune(method, X_l, y_l, seed)
         model = make_model(method, value).fit(X_l, y_l)
+
         acces.append(np.mean(model.predict(X_t) == y_t))
         chosen.append(value)
+
         if seed == SEEDS[0]:
-            plot_boundary(plot_name, model, X_t, y_t,
-                          title="{} (tuned value = {})".format(method, value))
+            plot_boundary(plot_name, model, X_t, y_t,title="{} (tuned value = {})".format(method, value))
+
     return np.mean(acces), np.std(acces), chosen
 
 
@@ -144,18 +156,13 @@ if __name__ == "__main__":
     with save_output(__file__) as output_file:
         sys.stdout = Tee(original_stdout, output_file)
 
-        try:
-            for xor, label in [(False, "two-moon"), (True, "xor")]:
-                print("=== Dataset: {} ===".format(label))
+        
+        for xor, label in [(False, "two-moon"), (True, "xor")]:
+            print("=== Dataset: {} ===".format(label))
 
-                for method in ["tree", "knn", "nb"]:
-                    mean, std, chosen = run(
-                        method, xor, "mc_{}_{}".format(label, method)
-                    )
-                    print(
-                        "{:16s} acc = {:.3f} +/- {:.3f}   chosen values: {}".format(
-                            names[method], mean, std, chosen
-                        )
-                    )
-        finally:
-            sys.stdout = original_stdout
+            for method in ["tree", "knn", "nb"]:
+                mean, std, chosen = run(method, xor, "mc_{}_{}".format(label, method))
+
+                print("{:16s} acc = {:.3f} +/- {:.3f}   chosen values: {}".format(names[method], mean, std, chosen))
+
+        sys.stdout = original_stdout
