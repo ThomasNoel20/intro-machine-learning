@@ -1,0 +1,8 @@
+=== Dataset: two-moon ===
+Decision tree    acc = 0.949 +/- 0.012   chosen values: [6, 12, 6, 6, 6]
+k-NN             acc = 0.957 +/- 0.011   chosen values: [9, 9, 9, 9, 225]
+KDE Naive Bayes  acc = 0.937 +/- 0.016   chosen values: [0.2, 0.2, 0.2, 0.2, 0.2]
+=== Dataset: xor ===
+Decision tree    acc = 0.905 +/- 0.189   chosen values: [6, 3, 3, 3, 6]
+k-NN             acc = 0.975 +/- 0.008   chosen values: [1, 1, 9, 9, 1]
+KDE Naive Bayes  acc = 0.509 +/- 0.029   chosen values: [0.8, 0.03, 0.8, 0.2, 0.005]

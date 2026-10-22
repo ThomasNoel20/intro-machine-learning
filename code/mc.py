@@ -14,6 +14,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from data import make_dataset, make_xor_dataset
 from plot import plot_boundary
 
+import sys
+from pathlib import Path
+
 
 NB_SAMPLES = 1500
 NB_LEARN = 1200
@@ -60,6 +63,25 @@ class KDENaiveBayes:
     def predict(self, X):
         return self.classes_[np.argmax(self._log_posterior(X), axis=1)]
 
+class Tee:
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, text):
+        for stream in self.streams:
+            stream.write(text)
+            stream.flush()
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+
+def save_output(filename):
+    output_path = Path(filename).with_name(
+        Path(filename).stem + "-answer.txt"
+    )
+    return open(output_path, "w", encoding="utf-8")
 
 def get_data(seed, xor=False):
     """Return X_learn, y_learn, X_test, y_test for one generation."""
@@ -111,12 +133,31 @@ def run(method, xor, plot_name):
     return np.mean(acces), np.std(acces), chosen
 
 
-if __name__ == "__main__":
-    names = {"tree": "Decision tree", "knn": "k-NN", "nb": "KDE Naive Bayes"}
 
-    for xor, label in [(False, "two-moon"), (True, "xor")]:
-        print("=== Dataset: {} ===".format(label))
-        for method in ["tree", "knn", "nb"]:
-            mean, std, chosen = run(method, xor, "mc_{}_{}".format(label, method))
-            print("{:16s} acc = {:.3f} +/- {:.3f}   chosen values: {}".format(
-                names[method], mean, std, chosen))
+if __name__ == "__main__":
+    names = {
+        "tree": "Decision tree",
+        "knn": "k-NN",
+        "nb": "KDE Naive Bayes"
+    }
+
+    original_stdout = sys.stdout
+
+    with save_output(__file__) as output_file:
+        sys.stdout = Tee(original_stdout, output_file)
+
+        try:
+            for xor, label in [(False, "two-moon"), (True, "xor")]:
+                print("=== Dataset: {} ===".format(label))
+
+                for method in ["tree", "knn", "nb"]:
+                    mean, std, chosen = run(
+                        method, xor, "mc_{}_{}".format(label, method)
+                    )
+                    print(
+                        "{:16s} acc = {:.3f} +/- {:.3f}   chosen values: {}".format(
+                            names[method], mean, std, chosen
+                        )
+                    )
+        finally:
+            sys.stdout = original_stdout
