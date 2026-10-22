@@ -24,9 +24,6 @@ NEIGHBORS = [1, 9, 45, 225, 901]
 BANDWIDTHS = [0.005, 0.03, 0.2, 0.8, 3.2]
 
 
-# ---------------------------------------------------------------------------
-# Naive Bayes with Gaussian KDE (scikit-learn convention)
-# ---------------------------------------------------------------------------
 class KDENaiveBayes:
     def __init__(self, bandwidth=1.0):
         self.bandwidth = bandwidth
@@ -40,9 +37,9 @@ class KDENaiveBayes:
     def _log_density(self, Xc, x):
         """log p(x_i | y) for one feature: Xc and x are 1D arrays."""
         h = self.bandwidth
-        u = (x[:, None] - Xc[None, :]) / h          # (n_test, n_c)
+        u = (x[:, None] - Xc[None, :]) / h
         a = -0.5 * u ** 2
-        m = a.max(axis=1)                             # log-sum-exp trick
+        m = a.max(axis=1)
         lse = m + np.log(np.exp(a - m[:, None]).sum(axis=1))
         return lse - np.log(len(Xc) * h * np.sqrt(2 * np.pi))
 
@@ -64,9 +61,6 @@ class KDENaiveBayes:
         return self.classes_[np.argmax(self._log_posterior(X), axis=1)]
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 def get_data(seed, xor=False):
     """Return X_learn, y_learn, X_test, y_test for one generation."""
     if xor:
@@ -89,8 +83,6 @@ def candidates(method):
 
 
 def tune(method, X, y, seed):
-    """Hold-out validation inside the learning set (80% train / 20% validation).
-    The training part has 960 samples, so n_neighbors=901 is still valid."""
     rng = np.random.RandomState(seed)
     idx = rng.permutation(len(X))
     n_train = int(0.8 * len(X))
@@ -106,18 +98,17 @@ def tune(method, X, y, seed):
 
 
 def run(method, xor, plot_name):
-    accs, chosen = [], []
+    acces, chosen = [], []
     for seed in SEEDS:
         X_l, y_l, X_t, y_t = get_data(seed, xor)
-        value = tune(method, X_l, y_l, seed)          # learning set only
-        model = make_model(method, value).fit(X_l, y_l)  # refit on full learning set
-        accs.append(np.mean(model.predict(X_t) == y_t))
+        value = tune(method, X_l, y_l, seed)
+        model = make_model(method, value).fit(X_l, y_l)
+        acces.append(np.mean(model.predict(X_t) == y_t))
         chosen.append(value)
         if seed == SEEDS[0]:
-            # boundary drawn with an independent set (the test set)
             plot_boundary(plot_name, model, X_t, y_t,
                           title="{} (tuned value = {})".format(method, value))
-    return np.mean(accs), np.std(accs), chosen
+    return np.mean(acces), np.std(acces), chosen
 
 
 if __name__ == "__main__":
