@@ -6,46 +6,63 @@ Project 1 - Classification algorithms
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+
 import numpy as np
+from matplotlib import pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 
 from data import make_dataset
 from plot import plot_boundary
-from utils import output_path, save_results
 
-N_NEIGHBORS = [1, 9, 45, 225, 901]
+
+NB_SAMPLES = 1500
+NB_LEARN = 1200
+SEEDS = [0, 1, 2, 3, 4]
+NEIGHBORS = [1, 9, 45, 225, 901]
+
+
+class Tee:
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, text):
+        for stream in self.streams:
+            stream.write(text)
+            stream.flush()
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
 
 
 def get_data(seed):
-    # Generate 1500 points: 1200 for learning, 300 for testing.
-    X, y = make_dataset(1500, random_state=seed)
-    return X[:1200], y[:1200], X[1200:], y[1200:]
+    X, y = make_dataset(NB_SAMPLES, random_state=seed)
+    return X[:NB_LEARN], y[:NB_LEARN], X[NB_LEARN:], y[NB_LEARN:]
 
 
-def train(X, y, k):
-    return KNeighborsClassifier(n_neighbors=k).fit(X, y)
+def main():
+    X_l, y_l, X_t, y_t = get_data(SEEDS[0])
+    print("Q1 - seed 0 (train / test accuracy)")
+    for k in NEIGHBORS:
+        model = KNeighborsClassifier(n_neighbors=k).fit(X_l, y_l)
+        plot_boundary("knn_k_{}".format(k), model, X_t, y_t,
+                      title="n_neighbors={}".format(k))
+        print("n_neighbors={}: train={:.3f} test={:.3f}".format(
+            k, model.score(X_l, y_l), model.score(X_t, y_t)))
+
+    print("\nQ2 - test accuracy over seeds 0-4 (mean +/- std)")
+    for k in NEIGHBORS:
+        acces = []
+        for seed in SEEDS:
+            X_l, y_l, X_t, y_t = get_data(seed)
+            model = KNeighborsClassifier(n_neighbors=k).fit(X_l, y_l)
+            acces.append(model.score(X_t, y_t))
+        print("n_neighbors={}: {:.3f} +/- {:.3f}".format(k, np.mean(acces), np.std(acces)))
 
 
 if __name__ == "__main__":
-    lines = []
-
-    # Q1: decision boundaries (seed 0), drawn on the test set
-    X_tr, y_tr, X_te, y_te = get_data(0)
-    lines.append("Q1 - seed 0")
-    for k in N_NEIGHBORS:
-        clf = train(X_tr, y_tr, k)
-        plot_boundary(output_path("knn", f"knn_{k}"), clf, X_te, y_te,
-                      title=f"n_neighbors={k}")
-        lines.append(f"n_neighbors={k}: train={clf.score(X_tr, y_tr):.3f} "
-                     f"test={clf.score(X_te, y_te):.3f}")
-
-    # Q2: mean and std of the test accuracy over 5 generations
-    lines.append("\nQ2 - mean +/- std of the test accuracy (seeds 0-4)")
-    for k in N_NEIGHBORS:
-        accs = []
-        for seed in range(5):
-            X_tr, y_tr, X_te, y_te = get_data(seed)
-            accs.append(train(X_tr, y_tr, k).score(X_te, y_te))
-        lines.append(f"n_neighbors={k}: {np.mean(accs):.3f} +/- {np.std(accs):.3f}")
-
-    save_results("knn", lines)
+    with open("knn_results.txt", "w", encoding="utf-8") as f:
+        sys.stdout = Tee(sys.__stdout__, f)
+        main()
+        sys.stdout = sys.__stdout__

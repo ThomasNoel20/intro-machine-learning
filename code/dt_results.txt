@@ -1,0 +1,13 @@
+Q1 - seed 0 (train / test accuracy)
+max_depth=1: train=0.748 test=0.713
+max_depth=3: train=0.877 test=0.900
+max_depth=6: train=0.974 test=0.950
+max_depth=12: train=0.998 test=0.960
+max_depth=None: train=1.000 test=0.957
+
+Q2 - test accuracy over seeds 0-4 (mean +/- std)
+max_depth=1: 0.731 +/- 0.015
+max_depth=3: 0.887 +/- 0.019
+max_depth=6: 0.951 +/- 0.010
+max_depth=12: 0.950 +/- 0.020
+max_depth=None: 0.949 +/- 0.020

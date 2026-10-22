@@ -1,0 +1,13 @@
+Q1 - seed 0 (train / test accuracy)
+n_neighbors=1: train=1.000 test=0.953
+n_neighbors=9: train=0.969 test=0.950
+n_neighbors=45: train=0.964 test=0.953
+n_neighbors=225: train=0.947 test=0.947
+n_neighbors=901: train=0.657 test=0.587
+
+Q2 - test accuracy over seeds 0-4 (mean +/- std)
+n_neighbors=1: 0.947 +/- 0.015
+n_neighbors=9: 0.959 +/- 0.012
+n_neighbors=45: 0.958 +/- 0.011
+n_neighbors=225: 0.953 +/- 0.011
+n_neighbors=901: 0.619 +/- 0.021
