@@ -7,17 +7,13 @@ Project 1 - Classification algorithms
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.special import logsumexp
-
-from sklearn.base import BaseEstimator
-from sklearn.base import ClassifierMixin
-
 from data import make_dataset
 from plot import plot_boundary
-from utils import output_path, save_results
+from scipy.special import logsumexp
+from sklearn.base import BaseEstimator, ClassifierMixin
+
 
 class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
-
     def __init__(self, bandwidth=0.2):
         self.bandwidth = bandwidth
 
@@ -46,37 +42,51 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         y = np.asarray(y)
         if y.shape[0] != X.shape[0]:
             raise ValueError("The number of samples differs between X and y")
-        if self.bandwidth <= 0:
-            raise ValueError("bandwidth must be positive")
 
-        self.classes_, counts = np.unique(y, return_counts=True)
-        self.class_prior_ = counts / counts.sum()
-        self.n_features_in_ = X.shape[1]
+        self.X_train_ = X
+        self.y_train_ = y
+        self.classes_ = np.unique(y)
+        self.priors_ = np.array([np.mean(y == c) for c in self.classes_])
 
-        self.X_class_ = [X[y == c] for c in self.classes_]
         return self
 
-    def _log_kde(self, x, train_values):
-        # log p(x | y)
-        h = self.bandwidth
-        u = (x[:, None] - train_values[None, :]) / h
-        log_kernel = -0.5 * u ** 2 - 0.5 * np.log(2 * np.pi)
-
-        # log( 1/(n_y h) * sum_j K(u_j) )
-        return logsumexp(log_kernel, axis=1) - np.log(len(train_values) * h)
+    def _gaussian_kernel(self, u):
+        return (1.0 / np.sqrt(2 * np.pi)) * np.exp(-(u**2) * 0.5)
 
     def _joint_log_likelihood(self, X):
-        #log p(y) + sum_i log p(x_i | y)
         X = np.asarray(X, dtype=float)
-        if X.ndim != 2 or X.shape[1] != self.n_features_in_:
-            raise ValueError("X must have shape (n_samples, %d)" % self.n_features_in_)
+        if X.ndim != 2:
+            raise ValueError("X must be 2 dimensional")
+        n_samples, n_features = X.shape
+        n_classes = len(self.classes_)
+        joint_log_prob = np.zeros((n_samples, n_classes))
 
-        jll = np.empty((X.shape[0], len(self.classes_)))
-        for k in range(len(self.classes_)):
-            jll[:, k] = np.log(self.class_prior_[k])
-            for i in range(self.n_features_in_):
-                jll[:, k] += self._log_kde(X[:, i], self.X_class_[k][:, i])
-        return jll
+        h = self.bandwidth
+
+        for c_idx, c in enumerate(self.classes_):
+            log_prior = np.log(self.priors_[c_idx])
+            # get list of booleans, true if corresponding class in y_train = c, false otherwise
+            mask = self.y_train_ == c
+            # get list of elements in X_train where at corresponding index in y_train is equal to c
+            X_c = self.X_train_[mask]
+            n_y = X_c.shape[0]  # get number of elements in list X_c
+
+            sum_log_likelihoods = np.zeros(n_samples)
+            if n_y > 0:
+                for i in range(n_features):
+                    X_test_i = X[:, i]
+                    X_train_c_i = X_c[:, i]
+
+                    u = (X_test_i[:, np.newaxis] - X_train_c_i[np.newaxis, :]) / h
+                    K = self._gaussian_kernel(u)
+
+                    density = np.sum(K, axis=1) / (n_y * h)
+                    density = np.maximum(density, 1e-10)
+                    sum_log_likelihoods += np.log(density)
+
+            joint_log_prob[:, c_idx] = log_prior + sum_log_likelihoods
+
+        return joint_log_prob
 
     def predict(self, X):
         """Predict class for X.
@@ -129,15 +139,20 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
             model, where classes are ordered as they are in ``self.classes_``.
         """
         jll = self._joint_log_likelihood(X)
-        # log p(y|x) = jll - log sum_y' exp(jll_y')
-        return jll - logsumexp(jll, axis=1, keepdims=True)
+
+        max_jll = np.max(jll, axis=1, keepdims=True)
+        log_sum_exp = max_jll + np.log(
+            np.sum(np.exp(jll - max_jll), axis=1, keepdims=True)
+        )
+
+        return jll - log_sum_exp
 
 
 BANDWIDTHS = [0.005, 0.03, 0.2, 0.8, 3.2]
 
 
 def get_data(seed):
-    #Generate 1500 points: 1200 for learning, 300 for testing.
+    # Generate 1500 points: 1200 for learning, 300 for testing.
     X, y = make_dataset(1500, random_state=seed)
     return X[:1200], y[:1200], X[1200:], y[1200:]
 
@@ -150,10 +165,10 @@ if __name__ == "__main__":
     lines.append("Q3 - seed 0")
     for h in BANDWIDTHS:
         clf = NaiveBayesClassifier(bandwidth=h).fit(X_tr, y_tr)
-        plot_boundary(output_path("nb", f"nb_h{h}"), clf, X_te, y_te,
-                      title=f"h={h}")
-        lines.append(f"h={h}: train={clf.score(X_tr, y_tr):.3f} "
-                     f"test={clf.score(X_te, y_te):.3f}")
+        plot_boundary("nb_bandwitdh_" + str(h), clf, X_te, y_te, title=f"h={h}")
+        lines.append(
+            f"h={h}: train={clf.score(X_tr, y_tr):.3f} test={clf.score(X_te, y_te):.3f}"
+        )
 
     # Q4: mean and std of the test accuracy over 5 generations
     lines.append("\nQ4 - mean +/- std of the test accuracy (seeds 0-4)")
@@ -161,7 +176,10 @@ if __name__ == "__main__":
         accs = []
         for seed in range(5):
             X_tr, y_tr, X_te, y_te = get_data(seed)
-            accs.append(NaiveBayesClassifier(bandwidth=h).fit(X_tr, y_tr).score(X_te, y_te))
+            accs.append(
+                NaiveBayesClassifier(bandwidth=h).fit(X_tr, y_tr).score(X_te, y_te)
+            )
         lines.append(f"h={h}: {np.mean(accs):.3f} +/- {np.std(accs):.3f}")
-
-    save_results("nb", lines)
+    with open("nb_results.txt", "w", encoding="utf-8") as f:
+        for l in lines:
+            f.write(l)

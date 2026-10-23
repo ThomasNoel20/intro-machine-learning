@@ -1,0 +1,2 @@
+Q3 - seed 0h=0.005: train=0.952 test=0.860h=0.03: train=0.922 test=0.920h=0.2: train=0.934 test=0.943h=0.8: train=0.769 test=0.733h=3.2: train=0.676 test=0.603
+Q4 - mean +/- std of the test accuracy (seeds 0-4)h=0.005: 0.838 +/- 0.015h=0.03: 0.905 +/- 0.024h=0.2: 0.937 +/- 0.016h=0.8: 0.760 +/- 0.035h=3.2: 0.640 +/- 0.023
