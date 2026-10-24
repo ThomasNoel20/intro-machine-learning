@@ -7,7 +7,6 @@ Project 1 - Classification algorithms
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.special import logsumexp
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 from data import make_dataset
