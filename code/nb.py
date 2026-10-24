@@ -7,10 +7,11 @@ Project 1 - Classification algorithms
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from data import make_dataset
-from plot import plot_boundary
 from scipy.special import logsumexp
 from sklearn.base import BaseEstimator, ClassifierMixin
+
+from data import make_dataset
+from plot import plot_boundary
 
 
 class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
@@ -43,50 +44,10 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         if y.shape[0] != X.shape[0]:
             raise ValueError("The number of samples differs between X and y")
 
-        self.X_train_ = X
-        self.y_train_ = y
         self.classes_ = np.unique(y)
         self.priors_ = np.array([np.mean(y == c) for c in self.classes_])
-
+        self.X_by_class_ = [X[y == c] for c in self.classes_]
         return self
-
-    def _gaussian_kernel(self, u):
-        return (1.0 / np.sqrt(2 * np.pi)) * np.exp(-(u**2) * 0.5)
-
-    def _joint_log_likelihood(self, X):
-        X = np.asarray(X, dtype=float)
-        if X.ndim != 2:
-            raise ValueError("X must be 2 dimensional")
-        n_samples, n_features = X.shape
-        n_classes = len(self.classes_)
-        joint_log_prob = np.zeros((n_samples, n_classes))
-
-        h = self.bandwidth
-
-        for c_idx, c in enumerate(self.classes_):
-            log_prior = np.log(self.priors_[c_idx])
-            # get list of booleans, true if corresponding class in y_train = c, false otherwise
-            mask = self.y_train_ == c
-            # get list of elements in X_train where at corresponding index in y_train is equal to c
-            X_c = self.X_train_[mask]
-            n_y = X_c.shape[0]  # get number of elements in list X_c
-
-            sum_log_likelihoods = np.zeros(n_samples)
-            if n_y > 0:
-                for i in range(n_features):
-                    X_test_i = X[:, i]
-                    X_train_c_i = X_c[:, i]
-
-                    u = (X_test_i[:, np.newaxis] - X_train_c_i[np.newaxis, :]) / h
-                    K = self._gaussian_kernel(u)
-
-                    density = np.sum(K, axis=1) / (n_y * h)
-                    density = np.maximum(density, 1e-10)
-                    sum_log_likelihoods += np.log(density)
-
-            joint_log_prob[:, c_idx] = log_prior + sum_log_likelihoods
-
-        return joint_log_prob
 
     def predict(self, X):
         """Predict class for X.
@@ -101,7 +62,7 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
         y : array of shape = [n_samples]
             The predicted classes, or the predict values.
         """
-        return self.classes_[np.argmax(self._joint_log_likelihood(X), axis=1)]
+        return self.classes_[np.argmax(self.predict_log_proba(X), axis=1)]
 
     def predict_proba(self, X):
         """Return probability estimates for the test data X.
@@ -117,7 +78,18 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
             The class probabilities of the input samples. Classes are ordered
             by lexicographic order.
         """
-        return np.exp(self.predict_log_proba(X))
+        lp = self.predict_log_proba(X)
+        lp = lp - lp.max(axis=1, keepdims=True)
+        p = np.exp(lp)
+        return p / p.sum(axis=1, keepdims=True)
+
+    def _log_density(self, Xc, x):
+        h = self.bandwidth
+        u = (x[:, None] - Xc[None, :]) / h
+        a = -0.5 * u**2
+        m = a.max(axis=1)
+        lse = m + np.log(np.exp(a - m[:, None]).sum(axis=1))
+        return lse - np.log(len(Xc) * h * np.sqrt(2 * np.pi))
 
     def predict_log_proba(self, X):
         """
@@ -138,14 +110,12 @@ class NaiveBayesClassifier(ClassifierMixin, BaseEstimator):
             Returns the log-probability of the sample for each class in the
             model, where classes are ordered as they are in ``self.classes_``.
         """
-        jll = self._joint_log_likelihood(X)
-
-        max_jll = np.max(jll, axis=1, keepdims=True)
-        log_sum_exp = max_jll + np.log(
-            np.sum(np.exp(jll - max_jll), axis=1, keepdims=True)
-        )
-
-        return jll - log_sum_exp
+        out = np.zeros((X.shape[0], len(self.classes_)))
+        for k in range(len(self.classes_)):
+            out[:, k] = np.log(self.priors_[k])
+            for i in range(X.shape[1]):
+                out[:, k] += self._log_density(self.X_by_class_[k][:, i], X[:, i])
+        return out
 
 
 BANDWIDTHS = [0.005, 0.03, 0.2, 0.8, 3.2]
