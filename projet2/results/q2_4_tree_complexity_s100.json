@@ -1,0 +1,102 @@
+[
+ {
+  "method": "tree",
+  "complexity": 1,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.08167370769155845,
+  "variance": 0.010843673295888352,
+  "expected_error": 0.17014423716533295
+ },
+ {
+  "method": "tree",
+  "complexity": 2,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.027611693064722078,
+  "variance": 0.02565213848740762,
+  "expected_error": 0.13089068773001583
+ },
+ {
+  "method": "tree",
+  "complexity": 3,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.014042449865267552,
+  "variance": 0.035097834335724026,
+  "expected_error": 0.1267671403788777
+ },
+ {
+  "method": "tree",
+  "complexity": 4,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.004063529190936523,
+  "variance": 0.042035055481793114,
+  "expected_error": 0.12372544085061576
+ },
+ {
+  "method": "tree",
+  "complexity": 5,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.001931853097469957,
+  "variance": 0.053085016829892064,
+  "expected_error": 0.13264372610524816
+ },
+ {
+  "method": "tree",
+  "complexity": 6,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0016130911909089968,
+  "variance": 0.06682020696331879,
+  "expected_error": 0.14606015433211395
+ },
+ {
+  "method": "tree",
+  "complexity": 8,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0015639668013036447,
+  "variance": 0.08221254913475129,
+  "expected_error": 0.16140337211394104
+ },
+ {
+  "method": "tree",
+  "complexity": 10,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0017138485224421154,
+  "variance": 0.08631219685932186,
+  "expected_error": 0.16565290155965012
+ },
+ {
+  "method": "tree",
+  "complexity": 12,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0017358106538757625,
+  "variance": 0.08727998854166666,
+  "expected_error": 0.16664265537342857
+ },
+ {
+  "method": "tree",
+  "complexity": 15,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0017466868994283097,
+  "variance": 0.08745062499999999,
+  "expected_error": 0.16682416807731443
+ }
+]

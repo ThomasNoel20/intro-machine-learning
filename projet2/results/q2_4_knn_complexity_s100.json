@@ -1,0 +1,102 @@
+[
+ {
+  "method": "knn",
+  "complexity": 1,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0013385648549633761,
+  "variance": 0.08275268749999999,
+  "expected_error": 0.1617181085328495
+ },
+ {
+  "method": "knn",
+  "complexity": 3,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0016835256220286026,
+  "variance": 0.029046548611111108,
+  "expected_error": 0.10835693041102586
+ },
+ {
+  "method": "knn",
+  "complexity": 5,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0028889924509326883,
+  "variance": 0.018265627500000003,
+  "expected_error": 0.09878147612881884
+ },
+ {
+  "method": "knn",
+  "complexity": 9,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.0059332648804267495,
+  "variance": 0.01099482947530864,
+  "expected_error": 0.09455495053362153
+ },
+ {
+  "method": "knn",
+  "complexity": 15,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.011343991510748093,
+  "variance": 0.007109084166666667,
+  "expected_error": 0.0960799318553009
+ },
+ {
+  "method": "knn",
+  "complexity": 25,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.019994347412916738,
+  "variance": 0.004634974500000001,
+  "expected_error": 0.10225617809080288
+ },
+ {
+  "method": "knn",
+  "complexity": 45,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.03292477844732576,
+  "variance": 0.0029969466666666666,
+  "expected_error": 0.11354858129187857
+ },
+ {
+  "method": "knn",
+  "complexity": 75,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.04497446886505332,
+  "variance": 0.0022917953444444444,
+  "expected_error": 0.1248931203873839
+ },
+ {
+  "method": "knn",
+  "complexity": 125,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.07112069181293088,
+  "variance": 0.00206506726,
+  "expected_error": 0.15081261525081702
+ },
+ {
+  "method": "knn",
+  "complexity": 200,
+  "n_train": 250,
+  "beta": 5.0,
+  "residual_error": 0.07762685617788614,
+  "squared_bias": 0.13163520381740867,
+  "variance": 0.0014155363328124998,
+  "expected_error": 0.21067759632810726
+ }
+]
